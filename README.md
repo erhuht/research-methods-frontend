@@ -87,6 +87,22 @@ This produces a static site in a directory titled `dist/` in the project root. Y
 
 - `VITE_DEV_MODE` can be set to `true` to be able to move through the survey a bit quicker. This disables the ID and chat interaction requirements, but not the requirement of having to respond to all survey items.
 
+VITE_PROXY_URL= http://127.0.0.1:5000
+
+VITE_CHAT_ENABLED_BEGIN= 1 # first enabled chat page
+
+VITE_CHAT_ENABLED_END= 99
+
+VITE_ALLOW_IMAGES= false
+
+VITE_PCTP_CONDITION= ai
+
+VITE_ATTN_CHECK_PAGE= 1
+
+VITE_ATTN_CHECK_RES = Logical reasoning,The best choice
+
+VITE_DEV_MODE= true # for testing, change to false
+
 ## Updating the Survey Items
 
 The survey items (instructions, questions), can be found in the `public/` directory. As our study contains two conditions that require different survey contents, we have two separate survey files (`ai_tasks.md` and `no-ai_tasks.md`). Additionally, since our study's information document also varies slightly between conditions, we also have two separate information/consent documents, though for these only examples are included (`ai_studyinfo_example.md` and `no-ai_studyinfo_example.md`) as they usually contain study-specific information.
