@@ -11,11 +11,8 @@ const saveToDatabase = async (data) => {
     })
 
     if (!res.ok) {
-      if (res.status && res.status === 304) {
-        throw new Error('Responses already saved with this ID.')
-      }
-
-      throw new Error('Failed to save data. Please try again.')
+      const errorBody = await res.json().catch(() => null)
+      throw new Error(errorBody?.error || 'Failed to save data. Please try again.')
     }
 
     const response = await res.json()
