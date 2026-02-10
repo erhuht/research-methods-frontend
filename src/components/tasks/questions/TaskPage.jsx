@@ -24,8 +24,15 @@ const TaskPage = ({ taskIndex, sourceIndex, title, items, next }) => {
       * Because these will be logged, we should map them to the source task index so we can compare between-participant 
       * responses later.
       */
+      const questionItems = items.filter((c) => ['text', 'textarea', 'number', 'likert', 'option', 'slider'].includes(c.type))
       pageResponses[taskIndex].forEach((r, i) => {
-        mappedResponses[`${sourceIndex}.${i}`] = r
+        if (r !== undefined && r !== null) {
+          const questionItem = questionItems[i - 1]
+          mappedResponses[`${sourceIndex}.${i}`] = {
+            question: questionItem?.question || '',
+            answer: r
+          }
+        }
       })
     }
 
