@@ -20,6 +20,13 @@ const ChatInput = ({preventInput, handleSend}) => {
     }
   }
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSubmitInput(e)
+    }
+  }
+
   const handleInputError = (message) => {
     setInputError(message)
     setTimeout(() => setInputError(''), 5000)
@@ -28,12 +35,13 @@ const ChatInput = ({preventInput, handleSend}) => {
   return (
     <form className='flex flex-row items-end' onSubmit={handleSubmitInput}>
       {enableImages && <ImageSelector setAttachedImage={setImageAttachment} imageAttached={imageAttachment.length > 0} handleInputError={handleInputError} />}
-      <Textarea 
-        className='drop-shadow-xl -mb-6' 
-        type="text" 
+      <Textarea
+        className='drop-shadow-xl -mb-6'
+        type="text"
         placeholder={preventInput ? 'Previous input is being processed...' : 'Type something here...'}
-        onChange={(e) => setUserInput(String(e.target.value))} 
-        value={userInput} 
+        onChange={(e) => setUserInput(String(e.target.value))}
+        onKeyDown={handleKeyDown}
+        value={userInput}
         autoComplete='off'
         isInvalid={inputError.length > 1}
         errorMessage={inputError}
