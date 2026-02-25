@@ -87,6 +87,7 @@ This produces a static site in a directory titled `dist/` in the project root. Y
 
 - `VITE_DEV_MODE` can be set to `true` to be able to move through the survey a bit quicker. This disables the ID and chat interaction requirements, but not the requirement of having to respond to all survey items.
 
+```bash
 VITE_PROXY_URL= http://127.0.0.1:5000
 
 VITE_CHAT_ENABLED_BEGIN= 1 # first enabled chat page
@@ -102,6 +103,9 @@ VITE_ATTN_CHECK_PAGE= 1
 VITE_ATTN_CHECK_RES = Logical reasoning,The best choice
 
 VITE_DEV_MODE= true # for testing, change to false
+
+VITE_SYSTEM_PROMPT= You are a helpful logical reasoning assistant.
+```
 
 ## Updating the Survey Items
 
