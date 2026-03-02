@@ -1,4 +1,5 @@
 const baseURL = import.meta.env.VITE_PROXY_URL
+const SYSTEM_PROMPT = import.meta.env.VITE_SYSTEM_PROMPT || ''
 
 /**
  * Request a chat completion based on a list of messages from oldest to newest
@@ -12,6 +13,9 @@ const requestChatResponse = async (messages) => {
     const messagesToSend = messages.filter((m) =>
       ['user', 'assistant', 'system'].includes(m.role),
     )
+    if (SYSTEM_PROMPT) {
+      messagesToSend.unshift({ role: 'system', content: SYSTEM_PROMPT })
+    }
     const res = await fetch(`${baseURL}/chat`, {
       method: 'POST',
       headers: {

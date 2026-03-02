@@ -22,6 +22,13 @@ const ChatInput = ({ preventInput, handleSend }) => {
     }
   }
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSubmitInput(e)
+    }
+  }
+
   const handleInputError = (message) => {
     setInputError(message)
     setTimeout(() => setInputError(''), 5000)
@@ -48,6 +55,7 @@ const ChatInput = ({ preventInput, handleSend }) => {
             : 'Type something here...'
         }
         onChange={(e) => setUserInput(String(e.target.value))}
+        onKeyDown={handleKeyDown}
         value={userInput}
         autoComplete='off'
         isInvalid={inputError.length > 1}
