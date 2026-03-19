@@ -29,6 +29,7 @@ const ChatContainer = ({ sourceIndex }) => {
           setWriteProgress={setWriteProgress}
           writeProgress={writeProgress}
           makesMistakes={firstChatMakesMistakes}
+          name='AI 1'
         />
         <ChatView
           sourceIndex={sourceIndex}
@@ -37,6 +38,7 @@ const ChatContainer = ({ sourceIndex }) => {
           setWriteProgress={setWriteProgress}
           writeProgress={writeProgress}
           makesMistakes={!firstChatMakesMistakes}
+          name='AI 2'
         />
       </div>
       {ctxStore.state.chatEnabled && (

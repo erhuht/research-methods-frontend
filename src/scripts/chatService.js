@@ -1,5 +1,4 @@
 const baseURL = import.meta.env.VITE_PROXY_URL
-const SYSTEM_PROMPT = import.meta.env.VITE_SYSTEM_PROMPT || ''
 
 /**
  * Request a chat completion based on a list of messages from oldest to newest
@@ -8,14 +7,15 @@ const SYSTEM_PROMPT = import.meta.env.VITE_SYSTEM_PROMPT || ''
  * @returns The queued job ID that can be used to check if the prompt has been processed
  * @see checkChatResponse
  */
-const requestChatResponse = async (messages) => {
+const requestChatResponse = async (messages, systemPrompt) => {
   try {
     const messagesToSend = messages.filter((m) =>
       ['user', 'assistant', 'system'].includes(m.role),
     )
-    if (SYSTEM_PROMPT) {
-      messagesToSend.unshift({ role: 'system', content: SYSTEM_PROMPT })
+    if (systemPrompt.length > 0) {
+      messagesToSend.unshift({ role: 'system', content: systemPrompt })
     }
+
     const res = await fetch(`${baseURL}/chat`, {
       method: 'POST',
       headers: {

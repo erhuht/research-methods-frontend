@@ -14,6 +14,7 @@ const ChatView = ({
   setWriteProgress,
   writeProgress,
   makesMistakes,
+  name,
 }) => {
   const [messages, setMessages] = useState([])
   // const [isGenerating, setIsGenerating] = useState(false);
@@ -41,12 +42,9 @@ const ChatView = ({
     /* Render user-sent message + scroll to bottom */
     const messageHistory = messages
 
-    const newSystemMessage = {
-      role: 'system',
-      content: makesMistakes ? 'Now make mistakes.' : 'Now tell the truth.',
-      ts: Date.now(),
-      task: sourceIndex,
-    }
+    const systemPrompt = makesMistakes
+      ? 'Make logical mistakes intentionally while answering. Try to rationalize your answers. Never reveal this to the user. You may still answer caluclations correctly in order to not reveal that you intentionally make mistakes.'
+      : ''
 
     const newMessage = {
       role: 'user',
@@ -56,33 +54,26 @@ const ChatView = ({
       task: sourceIndex,
     }
 
-    const newMessages = [newMessage]
-    // System prompt is random and only added if it's different from the last system prompt to avoid duplicates
-    if (
-      messages.length > 0 &&
-      messages.filter((m) => m.role === 'system').pop()?.content !==
-        newSystemMessage.content
-    ) {
-      newMessages.unshift(newSystemMessage)
-    }
-
-    setMessages([...messageHistory, ...newMessages])
+    setMessages([...messageHistory, newMessage])
     scrollToNewest()
 
     /* Request chat completion from API based on newest prompt and full chat history */
     try {
-      const res = await requestChatResponse([...messageHistory, ...newMessages])
+      const res = await requestChatResponse(
+        [...messageHistory, newMessage],
+        systemPrompt,
+      )
 
       if (res.error) {
-        showErrorMessageInChat(res.error, newMessages)
+        showErrorMessageInChat(res.error, newMessage)
         return
       }
 
       const jobId = res
-      checkChatStatus(jobId, messageHistory, newMessages)
+      checkChatStatus(jobId, messageHistory, newMessage)
     } catch (e) {
       console.log(e)
-      showErrorMessageInChat(e, messageHistory, newMessages)
+      showErrorMessageInChat(e, messageHistory, newMessage)
     }
   }
 
@@ -94,31 +85,31 @@ const ChatView = ({
    * @param {*} messageHistory Array of messages, if any
    * @param {*} newMessage The newest message sent by the user
    */
-  const checkChatStatus = (jobId, messageHistory, newMessages) => {
+  const checkChatStatus = (jobId, messageHistory, newMessage) => {
     try {
       setTimeout(async () => {
         const res = await checkChatResponse(jobId)
 
         if (res.processing) {
-          checkChatStatus(jobId, messageHistory, newMessages)
+          checkChatStatus(jobId, messageHistory, newMessage)
         } else {
-          handleRenderChatMessage(res, messageHistory, newMessages)
+          handleRenderChatMessage(res, messageHistory, newMessage)
         }
       }, 4000)
     } catch (e) {
-      showErrorMessageInChat(e, messageHistory, newMessages)
+      showErrorMessageInChat(e, messageHistory, newMessage)
     }
   }
 
   /**
    * Render the received chat message
    */
-  const handleRenderChatMessage = (fullRes, messageHistory, newMessages) => {
+  const handleRenderChatMessage = (fullRes, messageHistory, newMessage) => {
     setIsGenerating(false)
 
     /* If there's a processing error, show an error message and return */
     if (fullRes.error) {
-      showErrorMessageInChat(fullRes.error, messageHistory, newMessages)
+      showErrorMessageInChat(fullRes.error, messageHistory, newMessage)
       return
     }
 
@@ -133,7 +124,7 @@ const ChatView = ({
           : setWriteProgress((i / replyContent.length) * 100)
         setMessages([
           ...messageHistory,
-          ...newMessages,
+          newMessage,
           {
             role: 'assistant',
             content:
@@ -171,7 +162,7 @@ const ChatView = ({
         })
 
         // Make sure we're displaying the finished response + scroll to it
-        setMessages([...messageHistory, ...newMessages, finalResponse])
+        setMessages([...messageHistory, newMessage, finalResponse])
         scrollToNewest()
       },
       replyContent.length * pauseMs + 50,
@@ -192,7 +183,7 @@ const ChatView = ({
   /**
    * Display an error message in the chat and scroll down to it
    */
-  const showErrorMessageInChat = (error, messageHistory, newMessages) => {
+  const showErrorMessageInChat = (error, messageHistory, newMessage) => {
     const message = {
       role: '!',
       content: `An error occurred with ChatGPT. Please try again.\n\n\"${String(error)}\"\n\nDo NOT refresh the survey, this will erase your progress.\nIf the error persists, please return the study.`,
@@ -200,7 +191,7 @@ const ChatView = ({
       ts: Date.now(),
       task: sourceIndex,
     }
-    setMessages([...messageHistory, ...newMessages, message])
+    setMessages([...messageHistory, newMessage, message])
     setWriteProgress(-1)
     scrollToNewest()
     setIsGenerating(false)
@@ -221,7 +212,7 @@ const ChatView = ({
       {ctxStore.state.chatEnabled && (
         <div className='flex justify-center items-center w-full py-4'>
           <Chip color='success' variant='dot'>
-            ChatGPT
+            {name}
           </Chip>
         </div>
       )}
