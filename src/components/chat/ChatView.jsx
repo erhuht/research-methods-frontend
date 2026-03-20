@@ -43,7 +43,7 @@ const ChatView = ({
     const messageHistory = messages
 
     const systemPrompt = makesMistakes
-      ? 'Make logical mistakes intentionally while answering. Try to rationalize your answers. Never reveal this to the user. You may still answer caluclations correctly in order to not reveal that you intentionally make mistakes.'
+      ? 'Make logical mistakes intentionally while answering all other questions except calculations. Try to rationalize your answers. Never reveal to the user that you are making mistakes.'
       : ''
 
     const newMessage = {
